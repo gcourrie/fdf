@@ -6,48 +6,56 @@
 /*   By: gcourrie <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/01/18 17:20:04 by gcourrie          #+#    #+#             */
-/*   Updated: 2016/03/22 14:13:45 by gcourrie         ###   ########.fr       */
+/*   Updated: 2016/03/22 17:25:13 by gcourrie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../minilibx_macos/mlx.h"
 #include "../includes/fdf.h"
+#include <stdio.h>
 
-static int		*ft_put_str_in_int_tab(int *tmp, t_list *lst)
+static int		*ft_put_str_in_int_tab(t_list *lst, int *size)
 {
 	int			i;
 	int			n;
 	int			*ret;
+	char		*str;
+	int			index;
 
 	i = 0;
-	if (!(tmp = (int *)malloc(sizeof(int) * (lst->content_size))))
+	index = 0;
+	str = (char *)(lst->content);
+	if (!(ret = (int *)malloc(sizeof(int) * (lst->content_size))))
 		return (NULL);
-	ret = tmp;
-	while (lst->content[i])
+	while (str[i])
 	{
-		while (lst->content[i] == ' ')
+		while (str[i] == ' ')
 			i++;
 		n = i;
-		while (lst->content[n] != ' ' && lst->content[n])
+		while (str[n] != ' ' && str[n])
 			n++;
-		*tmp++ = ft_atoi(ft_strndup(lst->content, i, n));
+		ret[index++] = ft_atoi(ft_strndup(str, i, n));
 		i = n;
+		if ((int)(lst->content_size) > *size)
+			*size = lst->content_size;
+		while ((int)(lst->content_size) < *size)
+			ret[lst->content_size++] = 0;
 	}
 	return (ret);
 }
 
-static int		**fd_put_in_int_big_table(t_list *lst, int ac, int **table)
+static int		**fd_put_in_int_big_table(t_list *lst, int y,
+											int **table, int *size)
 {
-	int			**tmp;
+	int			i;
 
-	if (!(table = (int **)malloc(sizeof(int *) * ac)))
+	i = 0;
+	if (!(table = (int **)malloc(sizeof(int *) * y)))
 		return (NULL);
-	tmp = table;
 	while (lst)
 	{
-		*tmp = ft_put_str_in_int_tab(*tmp, lst);
+		table[i] = ft_put_str_in_int_tab(lst, size);
 		lst = lst->next;
-		tmp++;
+		i++;
 	}
 	return (table);
 }
@@ -69,40 +77,67 @@ static size_t	ft_count_grp_int(char *str)
 	return (i);
 }
 
-static t_list	*ft_map_into_list(int fd, t_list *lst, int *ac)
+static t_list	*ft_map_into_list(int fd, t_list *lst, int *y)
 {
 	char	*str;
 	t_list	*begin;
 
 	get_next_line(fd, &str);
-	lst = ft_lstnew(str, ft_strlen(str));
+	lst = ft_lstnew(str, ft_count_grp_int(str));
 	begin = lst;
 	while (get_next_line(fd, &str))
 	{
 		lst->next = ft_lstnew(str, ft_count_grp_int(str));
 		free(str);
 		lst = lst->next;
-		ac++;
+		*y += 1;
 	}
 	return (begin);
 }
 
-int		main(int ac, char **av)
+static void		ft_affichage(int **table, t_list *lst, t_size size)
 {
-	void	*mlx_ptr;
+	int			i;
+	int			n;
+	int			sizex;
+
+	i = 0;
+	n = 0;
+	sizex = size.x;
+	while (size.y-- > 0)
+	{
+		sizex = size.x;
+		printf("size.y = %d\n", size.y);
+		printf("size.x = %d\n", size.x);
+		printf("table [%d] = ", i);
+		n = 0;
+		while (sizex-- > 0)
+			printf("%d ", table[i][n++]);
+		i++;
+		lst = lst->next;
+		printf("\n");
+	}
+}
+
+int				main(int ac, char **av)
+{
 	t_list	*lst;
 	int		fd;
 	int		**table;
+	t_size	size;
 
-	if (ac-- == 2)
+	if (ac == 2)
 	{
+		size.x = 0;
+		size.y = 0;
+		table = NULL;
+		lst = NULL;
 		if ((fd = open(av[1], O_RDONLY)) < 0)
 			return (-1);
-		lst = ft_map_into_list(fd, lst, &ac);
-		table = fd_put_in_int_big_table(lst, ac, table);
-		mlx_ptr = mlx_init();
-		mlx_new_window(mlx_ptr, 500, 500, "fdf");
-		mlx_loop(mlx_ptr);
+		lst = ft_map_into_list(fd, lst, &(size.y));
+		table = fd_put_in_int_big_table(lst, size.y, table, &(size.x));
+		ft_affichage(table, lst, size);
+//		fdf(table, size);
 	}
 	return (0);
 }

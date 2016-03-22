@@ -1,28 +1,26 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   fdf.h                                              :+:      :+:    :+:   */
+/*   fdf.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gcourrie <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2016/03/22 11:47:27 by gcourrie          #+#    #+#             */
-/*   Updated: 2016/03/22 17:23:15 by gcourrie         ###   ########.fr       */
+/*   Created: 2016/03/22 17:00:24 by gcourrie          #+#    #+#             */
+/*   Updated: 2016/03/22 17:19:38 by gcourrie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef FDF_H
-# define FDF_H
+#include "fdf.h"
 
-# include "../includes/libft.h"
-# include <fcntl.h>
-#include "../minilibx_macos/mlx.h"
-
-typedef struct	s_size
+int			fdf(int	**table, t_size size)
 {
-	int		x;
-	int		y;
-}				t_size;
+	void	*mlx_ptr;
+	void	*win;
 
-int				fdf(int **table, t_size size);
-
-#endif
+	(void)table;
+	(void)size;
+	mlx_ptr = mlx_init();
+	win = mlx_new_window(mlx_ptr, 500, 500, "fdf");
+	mlx_loop(mlx_ptr);
+	return (0);
+}

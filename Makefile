@@ -6,7 +6,7 @@
 #    By: gcourrie <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2015/11/23 16:16:15 by gcourrie          #+#    #+#              #
-#    Updated: 2016/03/22 10:58:38 by gcourrie         ###   ########.fr        #
+#    Updated: 2016/03/22 17:17:57 by gcourrie         ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -20,7 +20,8 @@ LIB_PATH=		./minilibx_macos/
 
 INC_PATH=		./includes/
 
-SRC_NAME=		main.c
+SRC_NAME=		main.c \
+				fdf.c
 
 OBJ_NAME=		$(SRC_NAME:.c=.o)
 
@@ -45,7 +46,7 @@ all:			$(NAME)
 $(NAME):		$(OBJ)
 				cd $(LIB_PATH); $(MAKE) -f Makefile
 				cd libft; $(MAKE) -f Makefile
-				$(GCC) $(CFLAGS) -o $(NAME) $(LIB) $(FLAGS) $(OBJ)
+				$(GCC) $(CFLAGS) -o $(NAME) $(LIBFT) $(LIB) $(FLAGS) $(OBJ)
 
 $(OBJ_PATH)%.o:	$(SRC_PATH)%.c
 				@mkdir $(OBJ_PATH) 2> /dev/null || echo "" > /dev/null
