@@ -6,7 +6,7 @@
 /*   By: gcourrie <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2015/11/23 16:14:19 by gcourrie          #+#    #+#             */
-/*   Updated: 2016/03/22 14:06:08 by gcourrie         ###   ########.fr       */
+/*   Updated: 2016/03/23 16:47:31 by gcourrie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,7 @@ char				*ft_strncpy(char *dest, const char *src, size_t n);
 char				*ft_strdup(const char *s);
 char				*ft_strndup(const char *s, int n, int i);
 size_t				ft_strlen(const char *s);
+void				ft_puttab(char **str);
 void				ft_putchar(char c);
 void				ft_putstr(const char *s);
 void				ft_putnbr(int nbr);
