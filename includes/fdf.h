@@ -6,7 +6,7 @@
 /*   By: gcourrie <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/03/22 11:47:27 by gcourrie          #+#    #+#             */
-/*   Updated: 2016/03/23 16:08:30 by gcourrie         ###   ########.fr       */
+/*   Updated: 2016/03/23 19:34:37 by gcourrie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,11 +17,14 @@
 # include <fcntl.h>
 #include "../minilibx_macos/mlx.h"
 
-typedef struct		s_size
+typedef struct		s_data
 {
 	int				x;
 	int				y;
-}					t_size;
+	void			*mlx;
+	void			*win;
+	int				**table;
+}					t_data;
 
 typedef struct		s_lst
 {
@@ -29,6 +32,6 @@ typedef struct		s_lst
 	struct s_lst	*next;
 }					t_lst;
 
-int					fdf(int **table, t_size size);
+int					fdf(t_data e);
 
 #endif

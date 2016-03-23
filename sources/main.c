@@ -6,25 +6,30 @@
 /*   By: gcourrie <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/03/23 13:31:51 by gcourrie          #+#    #+#             */
-/*   Updated: 2016/03/23 18:09:17 by gcourrie         ###   ########.fr       */
+/*   Updated: 2016/03/23 20:33:16 by gcourrie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "fdf.h"
 #include <stdio.h>
 
-/* static void	clear_list(t_lst **lst) */
-/* { */
-/* 	while (*lst) */
-/* 	{ */
-/* 		free((*lst)->str); */
-/* 		free(*lst); */
-/* 		*lst = (*lst)->next; */
-/* 	} */
-/* 	*lst = NULL; */
-/* } */
+static void	clear_list(t_data e, t_lst *lst)
+{
+	int		i;
 
-static int	**put_in_int_tab(int **table, t_size size, t_lst *begin)
+	i = 0;
+	while (i++ < e.y)
+	{
+		if (lst->str)
+			free(lst->str);
+		if (lst)
+			free(lst);
+		lst = lst->next;
+	}
+	lst = NULL;
+}
+
+static int	**put_in_int_tab(t_data e, t_lst *begin)
 {
 	int		n;
 	int		i;
@@ -33,42 +38,36 @@ static int	**put_in_int_tab(int **table, t_size size, t_lst *begin)
 
 	i = 0;
 	lst = begin;
-	while (i < size.y)
+	while (i < e.y)
 	{
 		n = 0;
-		printf("size.x = %d\n", size.x);
-		if (!(table[i] = (int *)ft_memalloc(sizeof(int) * size.x)))
+		if (!(e.table[i] = (int *)ft_memalloc(sizeof(int) * e.x)))
 			return (NULL);
-		printf("size.y = %d\n", size.y);
-//		printf("%d %d %d\n", i, n, table[i][n]);
 		while (lst->str[n])
 		{
-			table[i][n] = ft_atoi(lst->str[n]);
-			printf("%d %d %d\n", i, n, table[i][n]);
+			e.table[i][n] = ft_atoi(lst->str[n]);
 			n++;
 		}
-		printf("YoLOZ\n");
 		lst = lst->next;
-		printf("YoLOUZ\n");
 		i++;
 	}
-//	clear_list(&begin);
-	return (table);
+	clear_list(e, begin);
+	return (e.table);
 }
 
-static void     ft_affichage(int **table, int x, int y)
+static void     ft_affichage(t_data e)
 {
     int         i;
     int         n;
 
     i = 0;
     n = 0;
-    while (i < y)
+    while (i < e.y)
     {
         n = 0;
-        while (n < x)
+        while (n < e.x)
         {
-            printf("%d ", table[i][n]);
+            printf("%d ", e.table[i][n]);
             n++;
         }
         i++;
@@ -87,43 +86,48 @@ static int		ft_count_str(char **str)
 	return (i);
 }
 
+static t_lst	*get_the_struct(int fd, int *x, int *y, t_lst *begin)
+{
+	t_lst		*lst;
+	t_lst		*pl;
+	char		*tmp;
+
+	while (get_next_line(fd, &tmp) > 0)
+	{
+		if (!(lst = (t_lst *)malloc(sizeof(t_lst))))
+			return (0);
+		if ((*y)++ == 0 && (begin = lst))
+			pl = lst;
+		if (*y != 1 && (pl->next = lst))
+			pl = pl->next;
+		lst->str = ft_strsplit(tmp, ' ');
+		if (ft_count_str(lst->str) > *x)
+			*x = ft_count_str(lst->str);
+	}
+	return (begin);
+}
+
 int				main(int ac, char **av)
 {
-	int		**table;
 	t_lst	*begin;
-	t_lst	*lst;
-	t_size	size;
+	t_data	e;
 	int		fd;
-	char	*tmp;
 
-	lst = NULL;
-	table = NULL;
-	size.x = 0;
-	size.y = 0;
+
+	e.table = NULL;
+	begin = NULL;
+	e.x = 0;
+	e.y = 0;
 	if (ac == 2)
 	{
 		if ((fd = open(av[1], O_RDONLY)) < 0)
 			return (0);
-		while (get_next_line(fd, &tmp) > 0)
-		{
-			if (!(lst = (t_lst *)malloc(sizeof(t_lst))))
-				return (0);
-			if (size.y++ == 0)
-				begin = lst;
-			printf("size.y = %d\n", size.y);
-			lst->str = ft_strsplit(tmp, ' ');
-			ft_puttab(lst->str);
-			ft_putchar('\n');
-			if (ft_count_str(lst->str) > size.x)
-				size.x = ft_count_str(lst->str);
-			lst = lst->next;
-		}
-		printf("D\n");
-		if (!(table = (int **)malloc(sizeof(int *) * size.y)))
+		begin = get_the_struct(fd, &(e.x), &(e.y), begin);
+		if (!(e.table = (int **)malloc(sizeof(int *) * e.y)))
 			return (0);
-		table = put_in_int_tab(table, size, begin);
-		printf("E\n");
-		ft_affichage(table, size.x, size.y);
+		e.table = put_in_int_tab(e, begin);
+		ft_affichage(e);
+		fdf(e);
 	}
 	return (0);
 }
