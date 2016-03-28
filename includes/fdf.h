@@ -6,7 +6,7 @@
 /*   By: gcourrie <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/03/22 11:47:27 by gcourrie          #+#    #+#             */
-/*   Updated: 2016/03/23 19:34:37 by gcourrie         ###   ########.fr       */
+/*   Updated: 2016/03/28 17:49:20 by gcourrie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,21 @@ typedef struct		s_data
 	void			*mlx;
 	void			*win;
 	int				**table;
+	int				eye_x;
+	int				eye_y;
+	int				eye_z;
+	int				x_x;
+	int				x_y;
+	int				x_z;
+	int				y_x;
+	int				y_y;
+	int				y_z;
+	int				z_x;
+	int				z_y;
+	int				z_z;
+
 }					t_data;
+
 
 typedef struct		s_lst
 {

@@ -6,7 +6,7 @@
 /*   By: gcourrie <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/03/22 17:00:24 by gcourrie          #+#    #+#             */
-/*   Updated: 2016/03/23 21:02:12 by gcourrie         ###   ########.fr       */
+/*   Updated: 2016/03/28 18:46:24 by gcourrie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,9 @@
 #include "../minilibx_macos/mlx.h"
 int			fdf(t_data e)
 {
+	eye_init(&e);
 	e.mlx = mlx_init();
-	e.win = mlx_new_window(e.mlx, 500, 500, "fdf");
+	e.win = mlx_new_window(e.mlx, 640, 480, "fdf");
 	mlx_expose_hook(e.win, expose_hook, &e);
 	mlx_loop(e.mlx);
 	return (0);
@@ -27,46 +28,51 @@ static int	expose_hook(t_data *e)
 	return (0);
 }
 
-int			draw_fdf(t_data *e)
+static int	draw_fdf(t_data *e)
 {
 	int		x;
 	int		y;
 
-	x = 0;
-	y = 0;
-	while (y < e.y)
+	x = e.x;
+	y = e.y;
+	while (y > 0)
 	{
-		while (x < e.x)
+		while (x > 0)
 		{
-			print_lgn(x, y, e);
-			x++;
+			point_draw(e, x, y);
+			x--;
 		}
-		y++;
+		x = e.x;
+		y--;
 	}
 }
 
-int			print_lgn(int x, int y, t_data *e)
+int			point_draw(e, x, y)
 {
-	if (x == 0 && y == 1)
-		pixel_put();
-	else if (y == 1)
-		hz_ligne_put(x, y, e);
-	else if (x == 1)
-		vr_ligne_put(x, y, e);
-	else
-	{
-		hz_ligne_put(x, y, e);
-		vr_ligne_put(x, y, e);
-	}
-	return (0);
+	int		xres;
+	int		yres;
+
+	pointx = x * e.x_x + x * e.y_x + x * e.z_x;
+	pointy = y * e.x_y + y * e.y_y + y * e.z_y;
+	pointz = table[y][x] * e.x_z + table[y][x] * e.y_z + table[y][x] * e.z_z;
+	pointx = (6 * (pointx - e.eye_x)) / (6 + pointz) + e.eye_x;
+	pointy = (6 * (pointy - e.eye_y)) / (6 + pointz) + e.eye_y;
+
+	mlx_pixel_put(e.mlx, e.win, pointx, pointy);
 }
 
-int			hz_ligne_put(int x, int y, t_data *e)
+static void	eye_init(t_data *e)
 {
-	while ()
-}
-
-int			vr_ligne_put(int x, int y, t_data *e)
-{
-
+	e.mid_x = 0;
+	e.mid_y = 0;
+	e.mid_z = 0;
+	e.x_x = 1 + e.mid_x;
+	e.x_y = 0 + e.mid_y;
+	e.x_z = 0 + e.mid_z;
+	e.y_x = 0 + e.mid_x;
+	e.y_y = 1 + e.mid_y;
+	e.y_z = 0 + e.mid_z;
+	e.z_x = 0 + e.mid_x;
+	e.z_y = 0 + e.mid_y;
+	e.z_z = 1 + e.mid_z;
 }
