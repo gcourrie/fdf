@@ -6,7 +6,7 @@
 /*   By: gcourrie <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/03/22 11:47:27 by gcourrie          #+#    #+#             */
-/*   Updated: 2016/03/28 17:49:20 by gcourrie         ###   ########.fr       */
+/*   Updated: 2016/03/29 17:58:00 by gcourrie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,26 +16,34 @@
 # include "../includes/libft.h"
 # include <fcntl.h>
 #include "../minilibx_macos/mlx.h"
+typedef struct		s_point
+{
+	double			x;
+	double			y;
+	double			z;
+}					t_point;
 
 typedef struct		s_data
 {
 	int				x;
 	int				y;
+	int				x2;
+	int				y2;
 	void			*mlx;
 	void			*win;
 	int				**table;
-	int				eye_x;
-	int				eye_y;
-	int				eye_z;
-	int				x_x;
-	int				x_y;
-	int				x_z;
-	int				y_x;
-	int				y_y;
-	int				y_z;
-	int				z_x;
-	int				z_y;
-	int				z_z;
+	double			mid_x;
+	double			mid_y;
+	double			mid_z;
+	double			x_x;
+	double			x_y;
+	double			x_z;
+	double			y_x;
+	double			y_y;
+	double			y_z;
+	double			z_x;
+	double			z_y;
+	double			z_z;
 
 }					t_data;
 

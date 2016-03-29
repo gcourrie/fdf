@@ -6,7 +6,7 @@
 /*   By: gcourrie <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/03/23 13:31:51 by gcourrie          #+#    #+#             */
-/*   Updated: 2016/03/23 20:33:16 by gcourrie         ###   ########.fr       */
+/*   Updated: 2016/03/29 12:37:30 by gcourrie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -127,6 +127,7 @@ int				main(int ac, char **av)
 			return (0);
 		e.table = put_in_int_tab(e, begin);
 		ft_affichage(e);
+		printf("A\n");
 		fdf(e);
 	}
 	return (0);
