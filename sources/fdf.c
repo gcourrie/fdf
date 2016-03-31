@@ -6,61 +6,102 @@
 /*   By: gcourrie <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/03/22 17:00:24 by gcourrie          #+#    #+#             */
-/*   Updated: 2016/03/29 18:46:25 by gcourrie         ###   ########.fr       */
+/*   Updated: 2016/03/31 09:08:54 by gcourrie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "fdf.h"
-#include "../minilibx_macos/mlx.h"
+#include "../includes/fdf.h"
 #include <stdio.h>
 
 static void	eye_init(t_data *e)
 {
-	e->mid_x = 0;
-	e->mid_y = 0;
-	e->mid_z = 0;
-	e->x_x = 1 + e->mid_x;
-	e->x_y = 0 + e->mid_y;
-	e->x_z = 0 + e->mid_z;
-	e->y_x = 0 + e->mid_x;
-	e->y_y = 1 + e->mid_y;
-	e->y_z = 0 + e->mid_z;
-	e->z_x = 0 + e->mid_x;
-	e->z_y = 0 + e->mid_y;
-	e->z_z = 1 + e->mid_z;
+	e->mid_x = 6;
+	e->mid_y = -2;
+	e->mid_z = -10;
+	e->x_x = 1;
+	e->x_y = 0;
+	e->x_z = 0;
+	e->y_x = 0;
+	e->y_y = 1;
+	e->y_z = 0;
+	e->z_x = 0;
+	e->z_y = 0;
+	e->z_z = 1;
 }
 
 static int		ft_camera(t_data *e, t_point *point, int x, int y)
 {
 	int		z;
 
-	printf("x = %d, y = %d\n", x, y);
-	printf("table[%d][%d] = %d\n", y, x, e->table[y][x]);
+//	printf("x = %d, y = %d\n", x, y);
 	z = e->table[y][x];
-	printf("C\n");
-	point->x = x * e->x_x + x * e->y_x + x * e->z_x;
-	printf("C\n");
-	point->y = y * e->x_y + y * e->y_y + y * e->z_y;
-	printf("C\n");
-	point->z = z * e->x_z + z * e->y_z + z * e->z_z;
-	printf("C\n");
-	point->x = (point->x * 6) / (6 + point->z);
-	printf("C\n");
-	point->y = (point->y * 6) / (6 + point->z);
-	printf("C\n");
+	point->x = x * e->x_x + x * e->y_x + x * e->z_x - e->mid_x;
+	point->y = y * e->x_y + y * e->y_y + y * e->z_y - e->mid_y;
+	point->z = z * e->x_z + z * e->y_z + z * e->z_z - e->mid_z;
+	point->x = (int)((point->x * 6) / (6 + point->z) * 320 / 3.5 + 320);
+	point->y = (int)((point->y * 6) / (6 + point->z) * 240 / 3.5 + 240);
+	return (0);
+}
+
+static int		put_pixel(t_data *e, int pointx, int pointy)
+{
+	printf("printx = %d printy = %d\n", pointx, pointy);
+	if (pointx <= 640 && pointx >= 0 && pointy <= 480 && pointy >= 0)
+		mlx_pixel_put(e->mlx, e->win, pointx, pointy, 0x00FFFFFF);
+/* 	if (pointx <= 320 && pointx >= -320 && pointy <= 240 && pointy <= -240) */
+/* 		mlx_pixel_put(e->mlx, e->win, pointx, pointy, 0x00FFFFFF); */
 	return (0);
 }
 
 static int		draw_line(t_data *e, t_point *rst, t_point *nd)
 {
-	double		pointx;
-	double		pointy;
+	double		a;
+	double		b;
+	double		x1;
+	double		x2;
 
-	pointx = rst->x;
-	pointy = rst->y;
-	(void)nd;
-	if ((pointx <= 3.5 && pointx >= -3.5) && (pointy <= 3.5 && pointy >= -3.5))
-		mlx_pixel_put(e->mlx, e->win, ((pointx * 320 / 3.5) + 320), ((pointy * 240 / 3.5) + 240), 0x00FFFFFF);
+	a = (rst->y - nd->y) / (rst->x - nd->x);
+	printf("a = %f          rst->x = %d          rst->y = %d          nd->x = %d          nd->y = %d\n", a, (int)rst->x, (int)rst->y, (int)nd->x, (int)nd->y);
+	b = nd->y - a * nd->x;
+	if (a < 1 && a > -1)
+	{
+		x1 = rst->x;
+		x2 = nd->x;
+		printf("A\n");
+		if (rst->x <= nd->x)
+			while (x1 <= x2)
+			{
+				printf("a = %f          x1 = %d          x2 = %d\n", a, (int)x1, (int)x2);
+				put_pixel(e, x1, x1 * a + b);
+				x1 += 1;
+			}
+		else if (rst->x > nd->x)
+			while (x1 >= x2)
+			{
+				put_pixel(e, x2, x2 * a + b);
+				x2 += 1;
+			}
+	}
+	if (a > 1 || a < -1)
+	{
+		printf("B\n");
+		x1 = rst->y;
+		x2 = nd->y;
+		if (rst->y <= nd->y)
+			while (x1 <= x2)
+			{
+				put_pixel(e, (x1 - b) / a, x1);
+				x1 += 1;
+			}
+		else if (rst->y > nd->y)
+			while (x1 >= x2)
+			{
+				put_pixel(e, (x1 - b) / a, x1);
+				x2 += 1;
+			}
+	}
+/* 	put_pixel(e, rst->x, rst->y); */
+/* 	put_pixel(e, nd->x, nd->y); */
 	return (0);
 }
 
@@ -70,14 +111,13 @@ static int		point_draw(t_data *e, int x, int y)
 	t_point		right;
 	t_point		left;
 
-	printf("B\n");
+//	printf("B\n");
 	ft_camera(e, &actu, x, y);
-	printf("C\n");
-	if (x + 1 <= e->x)
+	if (x + 1 < e->x)
 		ft_camera(e, &right, x + 1, y);
-	if (y + 1 <= e->y)
+	if (y + 1 < e->y)
 		ft_camera(e, &left, x, y + 1);
-	printf("printx = %f printy = %f pointz = %f x = %d y = %d z = %d\n", actu.x, actu.y, actu.z, x, y, e->table[y][x]);
+//	printf("\nprintx = %d          printy = %d          pointz = %d          x = %d          y = %d          z = %d\n\n", (int)actu.x, (int)actu.y, (int)actu.z, x, y, e->table[y][x]);
 	draw_line(e, &actu, &right);
 	draw_line(e, &actu, &left);
 	return (0);
@@ -90,9 +130,9 @@ static int	draw_fdf(t_data *e)
 
 	x = 0;
 	y = 0;
-	while (y <= e->y)
+	while (y < e->y)
 	{
-		while (x <= e->x)
+		while (x < e->x)
 		{
 			point_draw(e, x, y);
 			x += 1;

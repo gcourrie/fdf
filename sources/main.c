@@ -6,11 +6,11 @@
 /*   By: gcourrie <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/03/23 13:31:51 by gcourrie          #+#    #+#             */
-/*   Updated: 2016/03/29 12:37:30 by gcourrie         ###   ########.fr       */
+/*   Updated: 2016/03/31 01:55:13 by gcourrie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "fdf.h"
+#include "../includes/fdf.h"
 #include <stdio.h>
 
 static void	clear_list(t_data e, t_lst *lst)
