@@ -6,7 +6,7 @@
 /*   By: gcourrie <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/03/22 17:00:24 by gcourrie          #+#    #+#             */
-/*   Updated: 2016/03/31 09:08:54 by gcourrie         ###   ########.fr       */
+/*   Updated: 2016/04/01 01:33:00 by gcourrie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,8 @@ static void	eye_init(t_data *e)
 	e->z_x = 0;
 	e->z_y = 0;
 	e->z_z = 1;
+	e->w_x = 800;
+	e->w_y = 600;
 }
 
 static int		ft_camera(t_data *e, t_point *point, int x, int y)
@@ -38,18 +40,17 @@ static int		ft_camera(t_data *e, t_point *point, int x, int y)
 	point->x = x * e->x_x + x * e->y_x + x * e->z_x - e->mid_x;
 	point->y = y * e->x_y + y * e->y_y + y * e->z_y - e->mid_y;
 	point->z = z * e->x_z + z * e->y_z + z * e->z_z - e->mid_z;
-	point->x = (int)((point->x * 6) / (6 + point->z) * 320 / 3.5 + 320);
-	point->y = (int)((point->y * 6) / (6 + point->z) * 240 / 3.5 + 240);
+	point->x = (int)((point->x * 6) / (6 + point->z) * e->w_x / 3.5 + e->w_x);
+	point->y = (int)((point->y * 6) / (6 + point->z) * e->w_y / 3.5 + e->w_y);
 	return (0);
 }
 
 static int		put_pixel(t_data *e, int pointx, int pointy)
 {
 	printf("printx = %d printy = %d\n", pointx, pointy);
-	if (pointx <= 640 && pointx >= 0 && pointy <= 480 && pointy >= 0)
+	if (pointx <= (e->w_x * 2) && pointx >= 0
+		&& pointy <= (e->w_y * 2) && pointy >= 0)
 		mlx_pixel_put(e->mlx, e->win, pointx, pointy, 0x00FFFFFF);
-/* 	if (pointx <= 320 && pointx >= -320 && pointy <= 240 && pointy <= -240) */
-/* 		mlx_pixel_put(e->mlx, e->win, pointx, pointy, 0x00FFFFFF); */
 	return (0);
 }
 
@@ -153,7 +154,7 @@ int			fdf(t_data e)
 {
 	eye_init(&e);
 	e.mlx = mlx_init();
-	e.win = mlx_new_window(e.mlx, 640, 480, "fdf");
+	e.win = mlx_new_window(e.mlx, e.w_x * 2, e.w_y * 2, "fdf");
 	mlx_expose_hook(e.win, expose_hook, &e);
 	mlx_loop(e.mlx);
 	return (0);

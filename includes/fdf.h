@@ -6,7 +6,7 @@
 /*   By: gcourrie <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/03/22 11:47:27 by gcourrie          #+#    #+#             */
-/*   Updated: 2016/03/29 17:58:00 by gcourrie         ###   ########.fr       */
+/*   Updated: 2016/04/01 01:27:21 by gcourrie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,8 @@ typedef struct		s_data
 	double			z_x;
 	double			z_y;
 	double			z_z;
+	int				w_x;
+	int				w_y;
 
 }					t_data;
 
