@@ -6,27 +6,22 @@
 /*   By: gcourrie <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/03/22 17:00:24 by gcourrie          #+#    #+#             */
-/*   Updated: 2016/04/01 01:33:00 by gcourrie         ###   ########.fr       */
+/*   Updated: 2016/04/06 07:37:13 by gcourrie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/fdf.h"
 #include <stdio.h>
+#include <math.h>
 
 static void	eye_init(t_data *e)
 {
-	e->mid_x = 6;
+	e->mid_x = -2;
 	e->mid_y = -2;
-	e->mid_z = -10;
-	e->x_x = 1;
-	e->x_y = 0;
-	e->x_z = 0;
-	e->y_x = 0;
-	e->y_y = 1;
-	e->y_z = 0;
-	e->z_x = 0;
-	e->z_y = 0;
-	e->z_z = 1;
+	e->mid_z = -30;
+	e->a_x = 1;
+	e->a_y = 1;
+	e->a_z = 1;
 	e->w_x = 800;
 	e->w_y = 600;
 }
@@ -35,13 +30,18 @@ static int		ft_camera(t_data *e, t_point *point, int x, int y)
 {
 	int		z;
 
-//	printf("x = %d, y = %d\n", x, y);
 	z = e->table[y][x];
-	point->x = x * e->x_x + x * e->y_x + x * e->z_x - e->mid_x;
-	point->y = y * e->x_y + y * e->y_y + y * e->z_y - e->mid_y;
-	point->z = z * e->x_z + z * e->y_z + z * e->z_z - e->mid_z;
-	point->x = (int)((point->x * 6) / (6 + point->z) * e->w_x / 3.5 + e->w_x);
-	point->y = (int)((point->y * 6) / (6 + point->z) * e->w_y / 3.5 + e->w_y);
+	p_x = x - e->mid_x;
+	p_y = y - e->mid_y;
+	p_z = z - e->mid_z;
+	point->x = cos(e->a_z) * p_x - sin(e->a_z) * p_y
+				+ p_x + cos(e->a_y)  * p_x + sin(e->a_y) * p_z;
+	point->y = cos(e->a_x) * p_y - cos(e->a_x) * p_y
+				+ p_y + cos(e->a_z)  * p_y + sin(e->a_z) * p_y;
+	point->z = cos(e->a_y) * p_z - cos(e->a_y) * p_z
+				+ p_z + cos(e->a_x)  * p_z + sin(e->a_x) * p_z;
+//	point->x = (int)((point->x * 6) / (6 + point->z) * e->w_x / 3.5 + e->w_x);
+//	point->y = (int)((point->y * 6) / (6 + point->z) * e->w_y / 3.5 + e->w_y);
 	return (0);
 }
 
@@ -62,17 +62,14 @@ static int		draw_line(t_data *e, t_point *rst, t_point *nd)
 	double		x2;
 
 	a = (rst->y - nd->y) / (rst->x - nd->x);
-	printf("a = %f          rst->x = %d          rst->y = %d          nd->x = %d          nd->y = %d\n", a, (int)rst->x, (int)rst->y, (int)nd->x, (int)nd->y);
 	b = nd->y - a * nd->x;
 	if (a < 1 && a > -1)
 	{
 		x1 = rst->x;
 		x2 = nd->x;
-		printf("A\n");
 		if (rst->x <= nd->x)
 			while (x1 <= x2)
 			{
-				printf("a = %f          x1 = %d          x2 = %d\n", a, (int)x1, (int)x2);
 				put_pixel(e, x1, x1 * a + b);
 				x1 += 1;
 			}
@@ -85,7 +82,6 @@ static int		draw_line(t_data *e, t_point *rst, t_point *nd)
 	}
 	if (a > 1 || a < -1)
 	{
-		printf("B\n");
 		x1 = rst->y;
 		x2 = nd->y;
 		if (rst->y <= nd->y)
@@ -112,15 +108,17 @@ static int		point_draw(t_data *e, int x, int y)
 	t_point		right;
 	t_point		left;
 
-//	printf("B\n");
 	ft_camera(e, &actu, x, y);
 	if (x + 1 < e->x)
+	{
 		ft_camera(e, &right, x + 1, y);
+		draw_line(e, &actu, &right);
+	}
 	if (y + 1 < e->y)
+	{
 		ft_camera(e, &left, x, y + 1);
-//	printf("\nprintx = %d          printy = %d          pointz = %d          x = %d          y = %d          z = %d\n\n", (int)actu.x, (int)actu.y, (int)actu.z, x, y, e->table[y][x]);
-	draw_line(e, &actu, &right);
-	draw_line(e, &actu, &left);
+		draw_line(e, &actu, &left);
+	}
 	return (0);
 }
 
