@@ -6,7 +6,7 @@
 /*   By: gcourrie <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/03/22 11:47:27 by gcourrie          #+#    #+#             */
-/*   Updated: 2016/04/06 07:10:12 by gcourrie         ###   ########.fr       */
+/*   Updated: 2016/04/08 04:36:26 by gcourrie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 # include "../includes/libft.h"
 # include <fcntl.h>
 #include "../minilibx_macos/mlx.h"
+
 typedef struct		s_point
 {
 	double			x;
@@ -54,5 +55,8 @@ typedef struct		s_lst
 }					t_lst;
 
 int					fdf(t_data e);
+int					key_hook(int keycode, t_data *e);
+int					draw_fdf(t_data *e);
+int					expose_hook(t_data *e);
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: gcourrie <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/03/22 17:00:24 by gcourrie          #+#    #+#             */
-/*   Updated: 2016/04/06 07:37:13 by gcourrie         ###   ########.fr       */
+/*   Updated: 2016/04/08 04:48:35 by gcourrie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,32 +16,41 @@
 
 static void	eye_init(t_data *e)
 {
-	e->mid_x = -2;
-	e->mid_y = -2;
+	e->mid_x = 1;
+	e->mid_y = -4;
 	e->mid_z = -30;
 	e->a_x = 1;
-	e->a_y = 1;
-	e->a_z = 1;
+	e->a_y = 0;
+	e->a_z = 0;
 	e->w_x = 800;
 	e->w_y = 600;
 }
 
 static int		ft_camera(t_data *e, t_point *point, int x, int y)
 {
-	int		z;
+	int			z;
+	double		p_x;
+	double		p_y;
+	double		p_z;
 
 	z = e->table[y][x];
 	p_x = x - e->mid_x;
 	p_y = y - e->mid_y;
 	p_z = z - e->mid_z;
-	point->x = cos(e->a_z) * p_x - sin(e->a_z) * p_y
-				+ p_x + cos(e->a_y)  * p_x + sin(e->a_y) * p_z;
-	point->y = cos(e->a_x) * p_y - cos(e->a_x) * p_y
-				+ p_y + cos(e->a_z)  * p_y + sin(e->a_z) * p_y;
-	point->z = cos(e->a_y) * p_z - cos(e->a_y) * p_z
-				+ p_z + cos(e->a_x)  * p_z + sin(e->a_x) * p_z;
-//	point->x = (int)((point->x * 6) / (6 + point->z) * e->w_x / 3.5 + e->w_x);
-//	point->y = (int)((point->y * 6) / (6 + point->z) * e->w_y / 3.5 + e->w_y);
+	point->x = cos(e->a_x) * cos(e->a_z) * p_x -
+				sin(e->a_x) * p_y + cos(e->a_x) * sin(e->a_z) * p_z + p_x;
+	point->y = (cos(e->a_y) * sin(e->a_x) * cos(e->a_z) +
+				sin(e->a_y) * sin(e->a_z)) * p_x +
+				cos(e->a_y) * cos(e->a_x) * p_y +
+				(cos(e->a_y) * sin(e->a_x) * sin(e->a_x) -
+				sin(e->a_y) * cos(e->a_z)) * p_z + p_y;
+	point->z = (sin(e->a_y) * sin(e->a_x) * cos(e->a_z) -
+				cos(e->a_y) * sin(e->a_z)) * p_x +
+				sin(e->a_y) * cos(e->a_x) * p_y +
+				(sin(e->a_y) * sin(e->a_x) * sin(e->a_x) +
+				cos(e->a_y) * cos(e->a_z)) * p_z + p_z;
+	point->x = (int)((point->x * 6) / (6 + point->z) * e->w_x / 3.5 + e->w_x);
+	point->y = (int)((point->y * 6) / (6 + point->z) * e->w_y / 3.5 + e->w_y);
 	return (0);
 }
 
@@ -73,7 +82,7 @@ static int		draw_line(t_data *e, t_point *rst, t_point *nd)
 				put_pixel(e, x1, x1 * a + b);
 				x1 += 1;
 			}
-		else if (rst->x > nd->x)
+		else if (rst->x >= nd->x)
 			while (x1 >= x2)
 			{
 				put_pixel(e, x2, x2 * a + b);
@@ -90,7 +99,7 @@ static int		draw_line(t_data *e, t_point *rst, t_point *nd)
 				put_pixel(e, (x1 - b) / a, x1);
 				x1 += 1;
 			}
-		else if (rst->y > nd->y)
+		else if (rst->y >= nd->y)
 			while (x1 >= x2)
 			{
 				put_pixel(e, (x1 - b) / a, x1);
@@ -102,11 +111,11 @@ static int		draw_line(t_data *e, t_point *rst, t_point *nd)
 	return (0);
 }
 
-static int		point_draw(t_data *e, int x, int y)
+static int			point_draw(t_data *e, int x, int y)
 {
-	t_point		actu;
-	t_point		right;
-	t_point		left;
+	t_point			actu;
+	t_point			right;
+	t_point			left;
 
 	ft_camera(e, &actu, x, y);
 	if (x + 1 < e->x)
@@ -122,7 +131,7 @@ static int		point_draw(t_data *e, int x, int y)
 	return (0);
 }
 
-static int	draw_fdf(t_data *e)
+int			draw_fdf(t_data *e)
 {
 	int		x;
 	int		y;
@@ -142,7 +151,7 @@ static int	draw_fdf(t_data *e)
 	return (0);
 }
 
-static int	expose_hook(t_data *e)
+int			expose_hook(t_data *e)
 {
 	draw_fdf(e);
 	return (0);
@@ -153,6 +162,7 @@ int			fdf(t_data e)
 	eye_init(&e);
 	e.mlx = mlx_init();
 	e.win = mlx_new_window(e.mlx, e.w_x * 2, e.w_y * 2, "fdf");
+	mlx_key_hook(e.win, key_hook, &e);
 	mlx_expose_hook(e.win, expose_hook, &e);
 	mlx_loop(e.mlx);
 	return (0);

@@ -6,7 +6,7 @@
 #    By: gcourrie <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2015/11/23 16:16:15 by gcourrie          #+#    #+#              #
-#    Updated: 2016/03/22 17:17:57 by gcourrie         ###   ########.fr        #
+#    Updated: 2016/04/08 03:44:13 by gcourrie         ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -21,7 +21,8 @@ LIB_PATH=		./minilibx_macos/
 INC_PATH=		./includes/
 
 SRC_NAME=		main.c \
-				fdf.c
+				fdf.c \
+				key.c
 
 OBJ_NAME=		$(SRC_NAME:.c=.o)
 
